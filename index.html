@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>당신은 몇% 회사 빌런?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e74c3c, #8e44ad, #c0392b, #922b21, #d35400, #a04000);
+            background-size: 300% 300%;
+            animation: gradient 8s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid rgba(231, 76, 60, 0.3);
+            color: white;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-size: 2.8em;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            color: #bdc3c7;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .question {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #ecf0f1;
+            margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .communication { background: #e74c3c; }
+        .teamwork { background: #8e44ad; }
+        .attitude { background: #c0392b; }
+        .responsibility { background: #922b21; }
+        .ethics { background: #d35400; }
+        .behavior { background: #a04000; }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(44, 44, 44, 0.8);
+            border: 2px solid rgba(231, 76, 60, 0.3);
+            border-radius: 15px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.05em;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            color: #ecf0f1;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(231, 76, 60, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option:hover {
+            background: rgba(60, 60, 60, 0.9);
+            border-color: #e74c3c;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.3);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            border-radius: 30px;
+            font-size: 1.3em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(231, 76, 60, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            margin-left: 15px;
+            font-size: 1.1em;
+            padding: 12px 30px;
+        }
+
+        .btn.secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .share-btn {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            margin-right: 15px;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            padding: 15px 35px;
+        }
+
+        .result {
+            display: none;
+            text-align: center;
+        }
+
+        .radar-container {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            margin: 30px auto;
+        }
+
+        .radar-chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .result-score {
+            font-size: 3em;
+            font-weight: 900;
+            color: #ecf0f1;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-type {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-description {
+            font-size: 1.1em;
+            color: #bdc3c7;
+            line-height: 1.7;
+            margin: 25px 0;
+            text-align: left;
+            background: rgba(44, 44, 44, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat-item {
+            background: rgba(44, 44, 44, 0.8);
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid;
+            color: #ecf0f1;
+        }
+
+        .stat-item.communication { border-left-color: #e74c3c; }
+        .stat-item.teamwork { border-left-color: #8e44ad; }
+        .stat-item.attitude { border-left-color: #c0392b; }
+        .stat-item.responsibility { border-left-color: #922b21; }
+        .stat-item.ethics { border-left-color: #d35400; }
+        .stat-item.behavior { border-left-color: #a04000; }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #95a5a6;
+            margin-bottom: 5px;
+        }
+
+        .stat-score {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(44, 44, 44, 0.6);
+            border-radius: 6px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .button-group.quiz-buttons {
+            justify-content: flex-end;
+        }
+
+        .button-group.quiz-buttons.has-prev {
+            justify-content: space-between;
+        }
+
+        .button-group .btn.secondary {
+            margin-left: 0;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(300px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+            }
+            
+            .radar-container {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn.secondary {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+
+            .share-btn {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 인트로 화면 -->
+        <div id="intro-screen">
+            <h1>😈 회사 빌런 테스트</h1>
+            <p class="subtitle">내가 회사에서 얼마나 빌런인지 알아보자! 솔직한 12가지 질문 👹</p>
+            
+            <div style="margin: 40px 0; text-align: center; background: rgba(44, 44, 44, 0.8); padding: 30px; border-radius: 20px; line-height: 1.8;">
+                <div style="background: rgba(231, 76, 60, 0.2); padding: 20px; border-radius: 10px; border-left: 4px solid #e74c3c;">
+                    <p style="color: #bdc3c7; font-size: 1.1em; margin: 0;">
+                        ⚠️ <strong>정직하게 답변하세요!</strong><br>
+                        평소 회사에서의 진짜 모습을 선택해야 정확한 빌런 지수를 알 수 있어요.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="startTest()">😈 빌런 테스트 시작</button>
+                <button class="btn share-btn" onclick="shareTest()">🔗 공유하기</button>
+            </div>
+        </div>
+        
+        <!-- 퀴즈 화면 -->
+        <div id="quiz-screen" style="display: none;">
+            <h1>😈 회사 빌런 테스트</h1>
+            <p class="subtitle">내가 회사에서 얼마나 빌런인지 알아보자! 솔직한 12가지 질문 👹</p>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <div id="quiz-container">
+                <div class="question-container">
+                    <div id="category-tag" class="category-tag"></div>
+                    <div class="question" id="question"></div>
+                    <div class="options" id="options"></div>
+                </div>
+                <div class="button-group quiz-buttons">
+                    <button class="btn secondary" id="prev-btn" onclick="prevQuestion()" style="display: none;">⬅️ 이전 질문</button>
+                    <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>다음 질문</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-score" id="result-score"></div>
+            <div class="result-type" id="result-type"></div>
+            
+            <div class="result-description" id="result-description"></div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="saveResultAsImage()">📸 결과 저장</button>
+                <button class="btn secondary" onclick="restartQuiz()">다시 측정하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 메시지 -->
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const questions = [
+            // 소통방식 (2문항)
+            {
+                category: "소통방식",
+                categoryClass: "communication",
+                question: "회의에서 동료가 발표할 때 나는?",
+                options: [
+                    { text: "끝까지 집중해서 듣는다", score: 1 },
+                    { text: "중간중간 딴 생각을 한다", score: 2 },
+                    { text: "핸드폰을 보거나 다른 일을 한다", score: 3 },
+                    { text: "중간에 끼어들어서 내 의견을 말한다", score: 4 }
+                ]
+            },
+            {
+                category: "소통방식",
+                categoryClass: "communication",
+                question: "동료와 의견이 다를 때 나의 반응은?",
+                options: [
+                    { text: "상대방 입장에서 이해하려고 노력한다", score: 1 },
+                    { text: "내 의견을 차근차근 설명한다", score: 2 },
+                    { text: "목소리를 높여서 강하게 주장한다", score: 3 },
+                    { text: "상대방을 무시하거나 비꼬는 말을 한다", score: 4 }
+                ]
+            },
+
+            // 팀워크 (2문항)
+            {
+                category: "팀워크",
+                categoryClass: "teamwork",
+                question: "팀 프로젝트에서 내가 맡은 일이 끝나면?",
+                options: [
+                    { text: "다른 팀원들을 도와준다", score: 1 },
+                    { text: "내 일만 끝내고 퇴근한다", score: 2 },
+                    { text: "남의 일까지 신경 쓸 여유가 없다고 생각한다", score: 3 },
+                    { text: "일 안 끝난 사람들을 뒤에서 욕한다", score: 4 }
+                ]
+            },
+            {
+                category: "팀워크",
+                categoryClass: "teamwork",
+                question: "동료가 도움을 요청했을 때?",
+                options: [
+                    { text: "최대한 도와준다", score: 1 },
+                    { text: "시간이 있으면 도와준다", score: 2 },
+                    { text: "내 일도 바쁘다고 거절한다", score: 3 },
+                    { text: "왜 미리 준비 안 했냐고 핀잔을 준다", score: 4 }
+                ]
+            },
+
+            // 업무태도 (2문항)
+            {
+                category: "업무태도",
+                categoryClass: "attitude",
+                question: "상사가 급한 업무를 지시했을 때?",
+                options: [
+                    { text: "바로 처리한다", score: 1 },
+                    { text: "다른 일 끝내고 처리한다", score: 2 },
+                    { text: "불만을 표시하면서 처리한다", score: 3 },
+                    { text: "왜 미리 말 안 했냐고 따진다", score: 4 }
+                ]
+            },
+            {
+                category: "업무태도",
+                categoryClass: "attitude",
+                question: "업무 시간에 개인적인 일을 하는 빈도는?",
+                options: [
+                    { text: "거의 안 한다", score: 1 },
+                    { text: "가끔 한다", score: 2 },
+                    { text: "자주 한다", score: 3 },
+                    { text: "당연한 거 아닌가? 매일 한다", score: 4 }
+                ]
+            },
+
+            // 책임감 (2문항)
+            {
+                category: "책임감",
+                categoryClass: "responsibility",
+                question: "내가 실수했을 때 나의 반응은?",
+                options: [
+                    { text: "바로 인정하고 사과한다", score: 1 },
+                    { text: "변명을 좀 하지만 결국 인정한다", score: 2 },
+                    { text: "다른 요인들을 먼저 언급한다", score: 3 },
+                    { text: "남 탓부터 한다", score: 4 }
+                ]
+            },
+            {
+                category: "책임감",
+                categoryClass: "responsibility",
+                question: "팀 프로젝트가 실패했을 때?",
+                options: [
+                    { text: "내 부분에서 부족한 점을 찾아본다", score: 1 },
+                    { text: "다 같이 책임이라고 생각한다", score: 2 },
+                    { text: "다른 사람들이 더 문제라고 생각한다", score: 3 },
+                    { text: "누구 때문인지 따져서 비난한다", score: 4 }
+                ]
+            },
+
+            // 윤리의식 (2문항)
+            {
+                category: "윤리의식",
+                categoryClass: "ethics",
+                question: "동료의 성과를 내가 가로챌 수 있는 상황이라면?",
+                options: [
+                    { text: "절대 그럴 수 없다", score: 1 },
+                    { text: "양심에 찔려서 못 한다", score: 2 },
+                    { text: "상황에 따라 할 수도 있다", score: 3 },
+                    { text: "기회가 오면 당연히 한다", score: 4 }
+                ]
+            },
+            {
+                category: "윤리의식",
+                categoryClass: "ethics",
+                question: "회사 물품을 개인적으로 사용하는 것에 대해?",
+                options: [
+                    { text: "절대 안 된다고 생각한다", score: 1 },
+                    { text: "작은 것 정도는 괜찮다고 생각한다", score: 2 },
+                    { text: "들키지 않으면 괜찮다고 생각한다", score: 3 },
+                    { text: "회사 것은 곧 내 것이라고 생각한다", score: 4 }
+                ]
+            },
+
+            // 행동패턴 (2문항)
+            {
+                category: "행동패턴",
+                categoryClass: "behavior",
+                question: "엘리베이터에서 동료와 마주쳤을 때?",
+                options: [
+                    { text: "먼저 인사하고 대화한다", score: 1 },
+                    { text: "인사는 하지만 조용히 있는다", score: 2 },
+                    { text: "핸드폰만 본다", score: 3 },
+                    { text: "못 본 척하거나 무시한다", score: 4 }
+                ]
+            },
+            {
+                category: "행동패턴",
+                categoryClass: "behavior",
+                question: "화장실에서 휴지가 떨어졌을 때?",
+                options: [
+                    { text: "새 휴지로 바꿔 놓는다", score: 1 },
+                    { text: "누군가 바꿔주길 기다린다", score: 2 },
+                    { text: "그냥 나간다", score: 3 },
+                    { text: "관리팀에 짜증내며 연락한다", score: 4 }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let totalScore = 0;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function startTest() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            loadQuestion();
+        }
+
+        function shareTest() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('링크가 클립보드에 복사되었습니다!');
+            }).catch(() => {
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('링크가 클립보드에 복사되었습니다!');
+            });
+        }
+
+        function saveResultAsImage() {
+            const resultElement = document.getElementById('result');
+            const buttons = resultElement.querySelector('.button-group');
+            
+            // 임시로 버튼 숨기기
+            buttons.style.display = 'none';
+            
+            // 잠시 기다린 후 캡처 (DOM 업데이트 완료 대기)
+            setTimeout(() => {
+                const options = {
+                    backgroundColor: null,
+                    scale: 1,
+                    useCORS: true,
+                    allowTaint: true,
+                    scrollX: 0,
+                    scrollY: 0,
+                    width: resultElement.scrollWidth,
+                    height: resultElement.scrollHeight,
+                    x: 0,
+                    y: 0
+                };
+
+                html2canvas(resultElement, options).then(canvas => {
+                    // 버튼 다시 보이기
+                    buttons.style.display = 'flex';
+                    
+                    // 캔버스 크기 조정 (더 선명하게)
+                    const finalCanvas = document.createElement('canvas');
+                    const ctx = finalCanvas.getContext('2d');
+                    
+                    // 고해상도로 설정
+                    const scaleFactor = 2;
+                    finalCanvas.width = canvas.width * scaleFactor;
+                    finalCanvas.height = canvas.height * scaleFactor;
+                    
+                    // 스케일링 설정
+                    ctx.scale(scaleFactor, scaleFactor);
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    
+                    // 배경색 설정 (그라디언트 배경 재현)
+                    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    gradient.addColorStop(0, '#e74c3c');
+                    gradient.addColorStop(0.2, '#8e44ad');
+                    gradient.addColorStop(0.4, '#c0392b');
+                    gradient.addColorStop(0.6, '#922b21');
+                    gradient.addColorStop(0.8, '#d35400');
+                    gradient.addColorStop(1, '#a04000');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // 원본 이미지 그리기
+                    ctx.drawImage(canvas, 0, 0);
+                    
+                    // 이미지 다운로드
+                    const link = document.createElement('a');
+                    link.download = '회사빌런테스트_결과.png';
+                    link.href = finalCanvas.toDataURL('image/png', 1.0);
+                    link.click();
+                    
+                    showToast('결과 이미지가 저장되었습니다!');
+                }).catch(error => {
+                    // 버튼 다시 보이기
+                    buttons.style.display = 'flex';
+                    console.error('이미지 저장 중 오류 발생:', error);
+                    showToast('이미지 저장 중 오류가 발생했습니다.');
+                });
+            }, 100);
+        }
+
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('category-tag').textContent = question.category;
+            document.getElementById('category-tag').className = `category-tag ${question.categoryClass}`;
+            document.getElementById('question').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option.text;
+                optionDiv.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            // 이전에 선택한 답변이 있다면 표시
+            if (answers[currentQuestion] !== undefined) {
+                const selectedIndex = question.options.findIndex(option => option.score === answers[currentQuestion]);
+                if (selectedIndex !== -1) {
+                    optionsContainer.children[selectedIndex].classList.add('selected');
+                    document.getElementById('next-btn').disabled = false;
+                }
+            } else {
+                document.getElementById('next-btn').disabled = true;
+            }
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+            
+            // 이전 버튼 표시/숨김 및 버튼 그룹 클래스 조정
+            const prevBtn = document.getElementById('prev-btn');
+            const buttonGroup = document.querySelector('.button-group.quiz-buttons');
+            
+            if (currentQuestion > 0) {
+                prevBtn.style.display = 'inline-block';
+                buttonGroup.classList.add('has-prev');
+            } else {
+                prevBtn.style.display = 'none';
+                buttonGroup.classList.remove('has-prev');
+            }
+        }
+
+        function selectOption(selectedIndex) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            options[selectedIndex].classList.add('selected');
+            
+            answers[currentQuestion] = questions[currentQuestion].options[selectedIndex].score;
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            // 총점 계산 (답변이 있는 것들만)
+            totalScore = 0;
+            for (let i = 0; i < answers.length; i++) {
+                if (answers[i] !== undefined) {
+                    totalScore += answers[i];
+                }
+            }
+            
+            const percentage = Math.round((totalScore / 48) * 100);
+            
+            let resultType, resultDescription;
+            
+            if (percentage >= 85) {
+                resultType = "완전 악역 빌런! 😈👑";
+                resultDescription = `
+                    와... 진짜 완벽한 회사 빌런이네요! 동료들이 당신을 보면 스트레스 지수가 급상승할 것 같아요.
+                    총 ${totalScore}점으로 최고 수준의 빌런 점수를 기록했습니다. 
+                    혹시 동료들이 당신 때문에 이직을 고민하고 있진 않나요? 🔥💀
+                `;
+            } else if (percentage >= 70) {
+                resultType = "상급 빌런! 😠⚡";
+                resultDescription = `
+                    꽤 높은 빌런 지수를 기록했네요! 회사에서 '그 사람'으로 통하고 있을 가능성이 높습니다.
+                    총 ${totalScore}점으로 상당한 빌런 성향을 보이고 있어요. 
+                    조금만 더 노력하면(?) 완전 빌런 달성 가능! 👹
+                `;
+            } else if (percentage >= 50) {
+                resultType = "중급 빌런 😤📢";
+                resultDescription = `
+                    평균 이상의 빌런 성향을 보이고 있어요. 상황에 따라 빌런이 되기도, 평범하기도 합니다.
+                    총 ${totalScore}점으로 중간 수준의 빌런 기질이 보이네요. 
+                    동료들이 당신을 조심스러워할 수도 있어요! 😈
+                `;
+            } else if (percentage >= 35) {
+                resultType = "초보 빌런 😑📋";
+                resultDescription = `
+                    아직 초보 빌런 단계네요. 가끔 빌런 같은 모습을 보이지만 대체로 평범합니다.
+                    총 ${totalScore}점으로 특별히 나쁘지도, 특별히 좋지도 않은 그냥 평범한 직장인이에요.
+                    빌런 되기엔 아직 멀었어요! 😅
+                `;
+            } else {
+                resultType = "모범 직장인 😇✨";
+                resultDescription = `
+                    와! 정말 모범적인 직장인이네요! 빌런과는 거리가 멀어요.
+                    총 ${totalScore}점으로 동료들이 당신을 좋아하고 신뢰할 것 같습니다. 
+                    회사에서 꼭 필요한 사람이에요. 이대로 쭉 가세요! 👏🌟
+                `;
+            }
+            
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result-score').textContent = percentage + '%';
+            document.getElementById('result-type').textContent = resultType;
+            document.getElementById('result-description').innerHTML = resultDescription;
+            
+            document.getElementById('progress').style.width = '100%';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            totalScore = 0;
+            
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('intro-screen').style.display = 'block';
+            loadQuestion();
+        }
+
+        window.onload = function() {
+            // 인트로 화면이 기본으로 표시됨
+        };
+    </script>
+</body>
+</html>
